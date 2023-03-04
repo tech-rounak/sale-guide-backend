@@ -10,9 +10,9 @@ const addSubscriber = async( req, res )=>{
     let statusCode = 201;
     try{
         const  {email ,productLink,price} = req.body;
-        console.log(req.body);
+    
         const data = await webScrap(productLink);
-        console.log(data);
+
         if(data.price == '' || data.productName === ''){
             statusCode = 400;
             throw new Error('Invalid Flipkart Product Link, Add a valid one!!');
@@ -34,9 +34,9 @@ const addSubscriber = async( req, res )=>{
         });
         
         await subscriber.save();
-        const mailTemplate = priceTriggered(subscriber.productName, currPrice, subscriber.productLink);
-        await sendEmail(subscriber.email,"price","price",mailTemplate);
-        res.status(200).send({result:subscriber});
+        // const mailTemplate = priceTriggered(subscriber.productName, currPrice, subscriber.productLink);
+        // await sendEmail(subscriber.email,"price","price",mailTemplate);
+        res.status(200).send({result:subscriber,msg:"Newsletter Subscribed Successfully"});
     }
     catch(err){
         console.log(err.message);
@@ -84,9 +84,9 @@ const discountChecker = async()=>{
         if( Number(currPrice) <= Number(subscriber[i].price)){
             
             subscriber[i].isActive = false;
-            const subject = 'Price Trigered';
-            const text = `Price Trigered`
-            await sendEmail(subscriber[i].email,subject,text,priceTrigered(subscriber[i].productName, currPrice, subscriber[i].productLink));
+            const subject = 'Price Triggered';
+            const text = `Price Triggered`
+            await sendEmail(subscriber[i].email,subject,text,priceTriggered(subscriber[i].productName, currPrice, subscriber[i].productLink));
             
             await subscriber[i].save();
         }
